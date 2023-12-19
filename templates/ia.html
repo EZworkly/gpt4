@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPT4</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-4 mb-4">GPT4</h1>
+
+        <form method="post" class="mb-4">
+            <div class="form-group">
+                <label for="question">Ingrese su pregunta:</label>
+                <input type="text" class="form-control" id="question" name="question" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Obtener respuesta</button>
+        </form>
+
+        {% if question %}
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Pregunta:</h5>
+                    <p class="card-text">{{ question }}</p>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">Respuesta:</h5>
+                    <p class="card-text" id="answerText">{{ answer|safe }}</p>
+                    <button class="btn btn-secondary" onclick="copyToClipboard()">Copiar respuesta</button>
+                    <div id="copyMessage" style="color: green; margin-top: 10px;"></div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <script>
+        function copyToClipboard() {
+            var textToCopy = document.getElementById("answerText");
+            var textArea = document.createElement("textarea");
+            textArea.value = textToCopy.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textArea);
+
+            // Mostrar mensaje en la página
+            var copyMessage = document.getElementById("copyMessage");
+            copyMessage.innerHTML = "Texto copiado al portapapeles";
+
+            // Limpiar el mensaje después de unos segundos (opcional)
+            setTimeout(function() {
+                copyMessage.innerHTML = "";
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
