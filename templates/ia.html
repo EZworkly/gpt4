@@ -5,15 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GPT4</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <style>
-        body {
-            padding: 2rem;
-        }
-    </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="mt-4 mb-4">GPT4</h1>
+        {% if session.get("logged_in") %}
+            <a href="{{ url_for('logout') }}" class="btn btn-danger float-right mt-3 mb-3">Cerrar Sesión</a>
+        {% endif %}
+
+        <h1 class="mt-4 mb-4">Unblocked GPT4</h1>
 
         <form method="post" class="mb-4">
             <div class="form-group">
@@ -23,22 +22,26 @@
             <button type="submit" class="btn btn-primary">Obtener respuesta</button>
         </form>
 
-        {% if question %}
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Pregunta:</h5>
-                    <p class="card-text">{{ question }}</p>
+        {% if session.get("logged_in") %}
+            {% if question is defined and question is not none %}
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Pregunta:</h5>
+                        <p class="card-text">{{ question }}</p>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
 
-            <div class="card mt-4">
-                <div class="card-body">
-                    <h5 class="card-title">Respuesta:</h5>
-                    <p class="card-text" id="answerText">{{ answer|safe }}</p>
-                    <button class="btn btn-secondary" onclick="copyToClipboard()">Copiar respuesta</button>
-                    <div id="copyMessage" style="color: green; margin-top: 10px;"></div>
+            {% if answer is defined and answer is not none %}
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Respuesta:</h5>
+                        <p class="card-text" id="answerText">{{ answer|safe }}</p>
+                        <button class="btn btn-secondary" onclick="copyToClipboard()">Copiar respuesta</button>
+                        <div id="copyMessage" style="color: green; margin-top: 10px;"></div>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
         {% endif %}
     </div>
 
@@ -56,15 +59,18 @@
             document.execCommand("copy");
             document.body.removeChild(textArea);
 
-            // Mostrar mensaje en la página
             var copyMessage = document.getElementById("copyMessage");
             copyMessage.innerHTML = "Texto copiado al portapapeles";
 
-            // Limpiar el mensaje después de unos segundos (opcional)
             setTimeout(function() {
                 copyMessage.innerHTML = "";
             }, 3000);
         }
+
+      window.addEventListener('beforeunload', function () {
+        var data = new FormData();
+        navigator.sendBeacon("{{ url_for('logout') }}", data);
+        });
     </script>
 </body>
 </html>
